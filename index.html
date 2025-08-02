@@ -18,7 +18,7 @@
   </style>
 </head>
 <body class="bg-[#b7c9f7] min-h-screen flex items-center justify-center">
-  <div class="bg-[#e3e9fc] border-4 border-[#7a8bbd] rounded-lg p-6 w-full max-w-md retro-shadow">
+  <div class="bg-[#e3e9fc] border-4 border-[#7a8bbd] rounded-lg p-6 w-full max-w-md retro-shadow relative">
     <!-- Top Bar -->
     <div class="bg-[#d1d8f6] border-b-2 border-[#7a8bbd] px-2 py-1 mb-4 flex justify-between items-center text-[18px] text-[#2d3c7a]">
       <span><span class="text-green-700">Loading...</span> Hide Lit</span>
@@ -51,6 +51,16 @@
     </button>
     <!-- Note -->
     <div class="text-center text-[#4a5c9a] text-[16px] mt-2">🧮 APR: ~9% daily, compounding</div>
+    <!-- Elapsed Time -->
+    <div class="text-center mb-2">
+      <span class="text-[18px]">Epoch started <span id="elapsed" class="text-[#2d3c7a] font-bold">Loading...</span> ago</span>
+    </div>
+    <!-- Bottom right credit -->
+    <a href="https://x.com/eunoiabluu" target="_blank"
+      class="fixed bottom-3 right-5 text-xl text-[#2d3c7a] opacity-70 hover:underline z-50"
+      style="font-family: 'VT323', monospace;">
+      created by : eunoiabluu
+    </a>
   </div>
   <script>
     // Clock
@@ -61,11 +71,11 @@
       document.getElementById('time').textContent = `${hh}:${mm}`;
     }, 1000);
 
-    // Countdown setup
-    const epochEnd = new Date();
-    epochEnd.setDate(epochEnd.getDate() + 2);
-    epochEnd.setHours(epochEnd.getHours() + 7);
-    epochEnd.setMinutes(epochEnd.getMinutes() + 33);
+    // Set epoch start to 2025-08-01 23:00:00 GMT+7 (which is 2025-08-01T16:00:00Z)
+    const epochStart = new Date('2025-08-01T16:00:00Z'); // 23:00 GMT+7
+
+    // Set epoch end to 3 days after epochStart
+    const epochEnd = new Date(epochStart.getTime() + 3 * 24 * 60 * 60 * 1000);
 
     function getRemainingDays() {
       const now = new Date();
@@ -91,6 +101,19 @@
     }
     setInterval(updateCountdown, 1000);
     updateCountdown();
+
+    function updateElapsed() {
+      const now = new Date();
+      let diff = now - epochStart;
+      if (diff < 0) diff = 0;
+      const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const m = Math.floor((diff / (1000 * 60)) % 60);
+      const s = Math.floor((diff / 1000) % 60);
+      document.getElementById('elapsed').textContent = `${d}d ${h}h ${m}m ${s}s`;
+    }
+    setInterval(updateElapsed, 1000);
+    updateElapsed();
 
     // APR Rate
     function updateAPR() {
