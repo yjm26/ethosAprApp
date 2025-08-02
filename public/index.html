@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EthOS Epoch 2 Terminal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Pixel/retro font -->
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'VT323', monospace;
+      font-size: 20px;
+    }
+    .retro-shadow {
+      box-shadow: 4px 4px 0 #a3b1d1, 8px 8px 0 #7a8bbd;
+    }
+  </style>
+</head>
+<body class="bg-[#b7c9f7] min-h-screen flex items-center justify-center">
+  <div class="bg-[#e3e9fc] border-4 border-[#7a8bbd] rounded-lg p-6 w-full max-w-md retro-shadow">
+    <!-- Top Bar -->
+    <div class="bg-[#d1d8f6] border-b-2 border-[#7a8bbd] px-2 py-1 mb-4 flex justify-between items-center text-[18px] text-[#2d3c7a]">
+      <span><span class="text-green-700">Loading...</span> Hide Lit</span>
+      <span>Ξ53,501 <span id="time">00:00</span></span>
+    </div>
+    <!-- Title -->
+    <h1 class="text-[28px] text-[#2d3c7a] text-center mb-1 tracking-wide">EthOS Epoch 2 Terminal</h1>
+    <div class="text-center mb-4">
+      <span class="text-[18px]">Ends in <span id="countdown" class="text-[#b22222] font-bold">Loading...</span></span>
+    </div>
+    <!-- Info Block -->
+    <div class="bg-[#f3f6ff] border-2 border-inset border-[#b7c9f7] p-3 mb-4 text-[18px]">
+      <div class="flex justify-between"><span>Epoch:</span> <span id="epochTime">Loading...</span></div>
+      <div class="flex justify-between"><span>APY:</span> <span id="apyRate">Loading...</span></div>
+      <div class="flex justify-between"><span>Code:</span> <span>92,683 AIR</span></div>
+    </div>
+    <!-- Input -->
+    <label for="airInput" class="block text-[18px] mb-1">📦 Enter your $AIR stack:</label>
+    <input type="number" id="airInput" placeholder="e.g. 10000"
+      class="w-full bg-white border-2 border-inset border-[#b7c9f7] rounded px-3 py-2 mb-3 text-[20px] focus:outline-none" />
+    <!-- Projected Output -->
+    <div class="bg-[#e3e9fc] border-2 border-inset border-[#b7c9f7] p-2 mb-3 text-[18px]">
+      📈 Projected $AIR after 3 days:
+      <div id="result" class="font-bold text-black text-[22px]">0 $AIR</div>
+    </div>
+    <!-- Button -->
+    <button onclick="calculateAIR()"
+      class="w-full bg-[#2d3c7a] text-white text-[20px] border-2 border-[#b7c9f7] rounded py-2 mb-2 hover:bg-[#1a224a] transition">
+      ▶️ Calculate
+    </button>
+    <!-- Note -->
+    <div class="text-center text-[#4a5c9a] text-[16px] mt-2">🧮 APR: ~9% daily, compounding</div>
+  </div>
+  <script>
+    // Clock
+    setInterval(() => {
+      const now = new Date();
+      const hh = String(now.getHours()).padStart(2, '0');
+      const mm = String(now.getMinutes()).padStart(2, '0');
+      document.getElementById('time').textContent = `${hh}:${mm}`;
+    }, 1000);
+
+    // Countdown setup
+    const epochEnd = new Date();
+    epochEnd.setDate(epochEnd.getDate() + 2);
+    epochEnd.setHours(epochEnd.getHours() + 7);
+    epochEnd.setMinutes(epochEnd.getMinutes() + 33);
+
+    function getRemainingDays() {
+      const now = new Date();
+      const diff = epochEnd - now;
+      if (diff < 0) return 0;
+      return diff / (1000 * 60 * 60 * 24); // days (fractional)
+    }
+
+    function updateCountdown() {
+      const now = new Date();
+      const diff = epochEnd - now;
+      if (diff < 0) {
+        document.getElementById('countdown').textContent = 'Ended';
+        document.getElementById('epochTime').textContent = 'Ended';
+        return;
+      }
+      const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const m = Math.floor((diff / (1000 * 60)) % 60);
+      const s = Math.floor((diff / 1000) % 60);
+      document.getElementById('countdown').textContent = `${d}d ${h}h ${m}m ${s}s`;
+      document.getElementById('epochTime').textContent = `${d}d ${h}h ${m}m`;
+    }
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    // APR Rate
+    function updateAPR() {
+      const base = 9;
+      const random = (Math.random() * 0.2 - 0.1).toFixed(1);
+      const rate = (base + parseFloat(random)).toFixed(1);
+      document.getElementById('apyRate').textContent = `${rate} % day`;
+    }
+    updateAPR();
+    setInterval(updateAPR, 15000);
+
+    // AIR calculator (projected after remaining days)
+    function calculateAIR() {
+      const input = parseFloat(document.getElementById('airInput').value);
+      if (isNaN(input)) {
+        document.getElementById('result').textContent = "Invalid input";
+        return;
+      }
+      const apr = 0.09;
+      const days = getRemainingDays();
+      const result = input * Math.pow(1 + apr, days);
+      document.getElementById('result').textContent = `${Math.round(result)} $AIR`;
+    }
+  </script>
+</body>
+</html>
