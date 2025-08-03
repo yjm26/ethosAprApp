@@ -31,7 +31,7 @@
     </div>
     <!-- Info Block -->
     <div class="bg-[#f3f6ff] border-2 border-inset border-[#b7c9f7] p-3 mb-4 text-[18px]">
-      <div class="flex justify-between"><span>Epoch:</span> <span id="epochTime">Loading...</span></div>
+      <div class="flex justify-between"><span>Epoch:</span> <span>2</span></div>
       <div class="flex justify-between"><span>APY:</span> <span id="apyRate">Loading...</span></div>
       <div class="flex justify-between"><span>Code:</span> <span>92,683 AIR</span></div>
     </div>
@@ -42,7 +42,7 @@
     <!-- Projected Output -->
     <div class="bg-[#e3e9fc] border-2 border-inset border-[#b7c9f7] p-2 mb-3 text-[18px]">
       📈 Projected $AIR after 3 days:
-      <div id="result" class="font-bold text-black text-[22px]">0 $AIR</div>
+      <div id="result" class="font-bold text-black text-[22px]">Enter a value to see your projected $AIR</div>
     </div>
     <!-- Button -->
     <button onclick="calculateAIR()"
@@ -71,17 +71,13 @@
       document.getElementById('time').textContent = `${hh}:${mm}`;
     }, 1000);
 
-    // Set epoch start to 2025-08-01 23:00:00 GMT+7 (which is 2025-08-01T16:00:00Z)
-    const epochStart = new Date('2025-08-01T16:00:00Z'); // 23:00 GMT+7
-
-    // Set epoch end to 3 days after epochStart
+    const epochStart = new Date('2025-08-01T16:00:00Z');
     const epochEnd = new Date(epochStart.getTime() + 3 * 24 * 60 * 60 * 1000);
 
     function getRemainingDays() {
       const now = new Date();
       const diff = epochEnd - now;
-      if (diff < 0) return 0;
-      return diff / (1000 * 60 * 60 * 24); // days (fractional)
+      return diff > 0 ? diff / (1000 * 60 * 60 * 24) : 0;
     }
 
     function updateCountdown() {
@@ -104,8 +100,7 @@
 
     function updateElapsed() {
       const now = new Date();
-      let diff = now - epochStart;
-      if (diff < 0) diff = 0;
+      const diff = Math.max(now - epochStart, 0);
       const d = Math.floor(diff / (1000 * 60 * 60 * 24));
       const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
       const m = Math.floor((diff / (1000 * 60)) % 60);
@@ -115,7 +110,6 @@
     setInterval(updateElapsed, 1000);
     updateElapsed();
 
-    // APR Rate
     function updateAPR() {
       const base = 9;
       const random = (Math.random() * 0.2 - 0.1).toFixed(1);
@@ -125,17 +119,19 @@
     updateAPR();
     setInterval(updateAPR, 15000);
 
-    // AIR calculator (projected after remaining days)
     function calculateAIR() {
-      const input = parseFloat(document.getElementById('airInput').value);
-      if (isNaN(input)) {
-        document.getElementById('result').textContent = "Invalid input";
+      const inputEl = document.getElementById('airInput');
+      const resultEl = document.getElementById('result');
+      const input = parseFloat(inputEl.value);
+      if (isNaN(input) || input <= 0) {
+        resultEl.textContent = "Please enter a valid number.";
         return;
       }
-      const apr = 0.09;
+      const apr = 0.09; // 9% per day
       const days = getRemainingDays();
-      const result = input * Math.pow(1 + apr, days);
-      document.getElementById('result').textContent = `${Math.round(result)} $AIR`;
+      // Simple interest: APR × days (no compounding)
+      const result = input * (1 + apr * days);
+      resultEl.textContent = `${result.toLocaleString(undefined, { maximumFractionDigits: 2 })} $AIR`;
     }
   </script>
 </body>
