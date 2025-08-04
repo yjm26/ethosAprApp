@@ -25,15 +25,15 @@
       <span>Ξ53,501 <span id="time">00:00</span></span>
     </div>
     <!-- Title -->
-    <h1 class="text-[28px] text-[#2d3c7a] text-center mb-1 tracking-wide">EthOS Epoch 2 Terminal</h1>
+    <h1 class="text-[28px] text-[#2d3c7a] text-center mb-1 tracking-wide">EthOS APY Terminal</h1>
     <div class="text-center mb-4">
       <span class="text-[18px]">Ends in <span id="countdown" class="text-[#b22222] font-bold">Loading...</span></span>
     </div>
     <!-- Info Block -->
     <div class="bg-[#f3f6ff] border-2 border-inset border-[#b7c9f7] p-3 mb-4 text-[18px]">
-      <div class="flex justify-between"><span>Epoch:</span> <span>2</span></div>
-      <div class="flex justify-between"><span>APY:</span> <span id="apyRate">Loading...</span></div>
-      <div class="flex justify-between"><span>Code:</span> <span>92,683 AIR</span></div>
+      <div class="flex justify-between"><span>Epoch:</span> <span>3</span></div>
+      <div class="flex justify-between"><span>APY:</span> <span id="apyRate">12.0 % day</span></div>
+      <div class="flex justify-between"><span>Code:</span> <span>85,366 AIR</span></div>
     </div>
     <!-- Input -->
     <label for="airInput" class="block text-[18px] mb-1">📦 Enter your $AIR stack:</label>
@@ -41,7 +41,7 @@
       class="w-full bg-white border-2 border-inset border-[#b7c9f7] rounded px-3 py-2 mb-3 text-[20px] focus:outline-none" />
     <!-- Projected Output -->
     <div class="bg-[#e3e9fc] border-2 border-inset border-[#b7c9f7] p-2 mb-3 text-[18px]">
-      📈 Projected $AIR after 3 days:
+      📈 Projected $AIR:
       <div id="result" class="font-bold text-black text-[22px]">Enter a value to see your projected $AIR</div>
     </div>
     <!-- Button -->
@@ -71,7 +71,7 @@
       document.getElementById('time').textContent = `${hh}:${mm}`;
     }, 1000);
 
-    const epochStart = new Date('2025-08-01T16:00:00Z');
+    const epochStart = new Date('2025-08-05T00:15:00+07:00'); // Epoch 3 start, GMT+7
     const epochEnd = new Date(epochStart.getTime() + 3 * 24 * 60 * 60 * 1000);
 
     function getRemainingDays() {
@@ -108,15 +108,6 @@
     setInterval(updateElapsed, 1000);
     updateElapsed();
 
-    function updateAPR() {
-      const base = 9;
-      const random = (Math.random() * 0.2 - 0.1).toFixed(1);
-      const rate = (base + parseFloat(random)).toFixed(1);
-      document.getElementById('apyRate').textContent = `${rate} % day`;
-    }
-    updateAPR();
-    setInterval(updateAPR, 15000);
-
     function calculateAIR() {
       const inputEl = document.getElementById('airInput');
       const resultEl = document.getElementById('result');
@@ -125,7 +116,7 @@
         resultEl.textContent = "Please enter a valid number.";
         return;
       }
-      const apr = 0.09; // 9% per day
+      const apr = 0.12; // 12% per day
       const days = getRemainingDays();
       // Simple interest: APR × days (no compounding)
       const result = input * (1 + apr * days);
